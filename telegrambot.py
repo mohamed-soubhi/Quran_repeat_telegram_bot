@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 import logging 
 # which allows you to log messages from your application
 
-from telegram import Update ,ReplyKeyboardRemove
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 # An Update represents an incoming update from the Telegram API
 from telegram import InlineQueryResultArticle 
 # This class represents a single result of an inline query
@@ -30,6 +30,8 @@ from telegram.ext import ContextTypes
 from telegram.ext import InlineQueryHandler 
 # This class is used to handle updates that contain inline queries
 from telegram.ext import ConversationHandler
+
+
 
 home = '/home/msa/TelegramBot/Quran_repeat_telegram_bot/'
 
@@ -242,7 +244,6 @@ async def ayat_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     Surah start No#: ''')   
     return SURAH_START 
 
-
 async def ayat_1(update: Update, context: ContextTypes.DEFAULT_TYPE): 
     global Surah_start 
     user = update.message.from_user  
@@ -310,7 +311,7 @@ async def ayat_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id=update.effective_chat.id, text='Please wait ... generating the file  ')
         #print(Surah_start, Surah_end, Ayah_start, Ayah_end)
         file_name = Ayat_program(Surah_start, Surah_end, Ayah_start, Ayah_end)    
-        await context.bot.send_document(chat_id=update.effective_chat.id, document=open(home+file_name, 'rb'))        
+        await context.bot.send_document(chat_id=update.effective_chat.id, document=open(file_name, 'rb'))        
         await context.bot.send_message(chat_id=update.effective_chat.id, text='we recommend to use VLC  ')
         await context.bot.send_message(chat_id=update.effective_chat.id, text="**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi")
         return ConversationHandler.END
@@ -334,7 +335,7 @@ async def Sura_Numbers(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if re.match(regex, user_entered):
         await context.bot.send_message(chat_id=update.effective_chat.id, text='Please wait ... generating the file  ')
         file_name = Surah_program(user_entered)    
-        await context.bot.send_document(chat_id=update.effective_chat.id, document=open(home+file_name, 'rb'))        
+        await context.bot.send_document(chat_id=update.effective_chat.id, document=open(file_name, 'rb'))        
         await context.bot.send_message(chat_id=update.effective_chat.id, text='we recommend to use VLC  ')
         await context.bot.send_message(chat_id=update.effective_chat.id, text="**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi")
         return ConversationHandler.END
@@ -343,8 +344,6 @@ async def Sura_Numbers(update: Update, context: ContextTypes.DEFAULT_TYPE):
     أدخل رقم السورة أو السور بأستخدام : أو,'''
         await context.bot.send_message(chat_id=update.effective_chat.id, text=text_sura)
         return SURAH_NUMBER
-
-
 
 def Surah_program(Surah_nums_inp):
     #print(type(Surah_nums_inp),Surah_nums_inp)
@@ -384,7 +383,7 @@ def Surah_program(Surah_nums_inp):
             for surah in surah_list:
                 mp3Url = moshaf['server'] + f'{int(surah):03d}' +'.mp3'
                 mp3QuranURL.append(mp3Url)
-                df= df.append([reciter['id'],reciter['name'],reciter['letter'],moshaf['id'],moshaf['name'],surah,mp3Url])                        
+                df = pd.concat([df, pd.DataFrame([reciter['id'],reciter['name'],reciter['letter'],moshaf['id'],moshaf['name'],surah,mp3Url])], ignore_index=True)                        
                 for Surah_num in Surah_nums:
                     if f'{int(Surah_num):03d}' in mp3Url :
                         listen_URL.append(mp3Url)
@@ -418,10 +417,6 @@ def Surah_program(Surah_nums_inp):
         """)
     #print("Finished writing "+playlist_name)
     return playlist_name
-  
-
-
-
 
 #todo check input validation 
 def check_ayat_input(Surah_start, Surah_end, Ayah_start, Ayah_end):
@@ -473,7 +468,6 @@ def set_start_end_ayat_index(Surah_start, Surah_end, Ayah_start, Ayah_end):
     AyaIndexEnd   = get_aya_index(Surah_end,Ayah_end)
     return (AyaIndexStart, AyaIndexEnd)
 
-
 #todo this function should be by json or xml
 def get_mp3_url(Qare2 , Aya_index):
     NAME = 0
@@ -485,7 +479,8 @@ def generate_urls_Quraa2 ( AyaStartIndex, AyaEndIndex ):
     url_list =[]   
     for Q in Quraa2 :
         for i in range(AyaStartIndex,AyaEndIndex+1):
-            Aya_index = str('{:0>4d}'.format(i))
+            #Aya_index = str('{:0>4d}'.format(i))
+            Aya_index = str('{:d}'.format(i))
             ##print(Aya_index)
             generated_url = get_mp3_url(Q,Aya_index)
             url_list.append( generated_url )
@@ -524,7 +519,6 @@ def generate_playList(playlist_name,mp3_list):
     #print("Finished writing "+playlist_name)
     return playlist_name
 
-
 def Ayat_program(Surah_start, Surah_end, Ayah_start, Ayah_end):
     #Surah_start, Surah_end, Ayah_start, Ayah_end = get_Ayat_input()
     AyaStartIndex, AyaEndIndex = set_start_end_ayat_index(Surah_start, Surah_end, Ayah_start, Ayah_end)    
@@ -532,7 +526,6 @@ def Ayat_program(Surah_start, Surah_end, Ayah_start, Ayah_end):
     playlist_name = create_playlist_name(Surah_start, Surah_end, Ayah_start, Ayah_end)
     generate_playList(playlist_name,mp3url_list)
     return playlist_name
-
 
 async def send_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     file_path = '/path/to/your/file.txt'
@@ -544,8 +537,9 @@ https://www.atheer-radio.com/'''
     await context.bot.send_message(chat_id=update.effective_chat.id, text=text_radio)
     #todo this list need to be modified 
     file_path = r'RadioList.m3u'
-    await context.bot.send_document(chat_id=update.effective_chat.id, document=open(home+file_path, 'rb'))        
-        await context.bot.send_message(chat_id=update.effective_chat.id, text='we recommend to use VLC  ')
+    #await context.bot.send_document(chat_id=update.effective_chat.id, document=open(home+file_path, 'rb'))    
+    await context.bot.send_document(chat_id=update.effective_chat.id, document=open(file_path, 'rb'))        
+    await context.bot.send_message(chat_id=update.effective_chat.id, text='we recommend to use VLC  ')
     await context.bot.send_message(chat_id=update.effective_chat.id, text="**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi")
 
 async def caps(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -562,16 +556,29 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     return ConversationHandler.END
 
-f = open("/home/msa/TelegramBot/bottoken.txt", 'r')
-bottoken = f.readline()
-f.close()
+reply_keyboard = [
+    ["Radio", "Sura","Ayat"],
+    ["راديو", "سورة","أيات"],
+    ["Done"],
+]
+
+markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Start the conversation and ask user for input."""
+    await update.message.reply_text(
+        start_txt,
+        reply_markup=markup,
+    )
+
 
 if __name__ == '__main__':
-    application = ApplicationBuilder().token(bottoken).build()
+    token = open('token.txt', 'r').readlines()
+    application = ApplicationBuilder().token(token[0]).build()
 
     # Add conversation handler with the states 
     sura_conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("Sura", sura)],
+        entry_points=[CommandHandler("sura", sura)],
         states={
             #SURAH_NUMBER: [MessageHandler(filters.Regex("^(\d+.*)$"), Sura_Numbers)],
             SURAH_NUMBER: [MessageHandler(filters.TEXT & ~filters.COMMAND, Sura_Numbers)],
@@ -582,7 +589,7 @@ if __name__ == '__main__':
 
     # Add conversation handler with the states SURAH_START, SURAH_END, AYA_START, AYA_END
     ayat_conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("Ayat", ayat_0)],
+        entry_points=[CommandHandler("ayat", ayat_0)],
         states={
             SURAH_START: [MessageHandler(filters.Regex("^(\d+.*)$"), ayat_1)],
             SURAH_END: [MessageHandler(filters.Regex("^(\d+.*)$"), ayat_2)],
@@ -599,6 +606,9 @@ if __name__ == '__main__':
 
     radio_handler = CommandHandler('radio', radio)
     application.add_handler(radio_handler)
+
+    start_handler = CommandHandler('start', start)
+    application.add_handler(start_handler)
 
     # Other handlers
     unknown_handler = MessageHandler(filters.COMMAND, unknown)
