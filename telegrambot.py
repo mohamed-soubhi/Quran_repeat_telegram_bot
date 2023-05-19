@@ -237,6 +237,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = 'unknown msg')
     await context.bot.send_message(chat_id=update.effective_chat.id,
     text = start_txt)
+    reply_markup=markup
 
 async def ayat_0(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.message.from_user
