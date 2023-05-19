@@ -43,17 +43,19 @@ start_txt = '''
 
 البرنامج قيد التجريب
 ننصح بإستخدام برنامج VLC
-أرسل  /Ayat لاختيار أيات محددة
-أرسل /Sura  لإختيار سور محددة
-أرسل  /Radio لاختيار البث المباشر
+أرسل  /radio لاختيار البث المباشر
+أرسل /sura  لإختيار سور محددة
+أرسل  /ayat لاختيار أيات محددة
 
 This program to play certain Ayat or Souar continously
 with diffrent readers 
 we recommend to use VLC player 
 
-send /Ayat for ayat  
-send /Sura for complete suar
-send /Radio for stream list
+
+send /ayat for ayat  
+send /sura for complete suar
+send /radio for stream list
+
 '''
 
 # Enable logging
@@ -557,9 +559,8 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return ConversationHandler.END
 
 reply_keyboard = [
-    ["Radio", "Sura","Ayat"],
-    ["راديو", "سورة","أيات"],
-    ["Done"],
+    ["radio", "sura","ayat"],
+    ["cancel"],
 ]
 
 markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
@@ -570,6 +571,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         start_txt,
         reply_markup=markup,
     )
+
+
+
 
 
 if __name__ == '__main__':
