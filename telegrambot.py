@@ -32,11 +32,16 @@ from telegram.ext import InlineQueryHandler
 from telegram.ext import ConversationHandler
 
 
+# Check the operating system and set the appropriate path separator
+if os.name == 'posix':  # Linux or macOS
+    home = '/home/msa/TelegramBot/Quran_repeat_telegram_bot/'
+else:  # Windows
+    home = os.getcwd()+r'\\'
 
-home = '/home/msa/TelegramBot/Quran_repeat_telegram_bot/'
+
 
 start_txt = '''
-**** Repeate Quran bot V0.0.1 ****
+**** Repeate Quran bot V0.1.1 ****
 هذا البرنامج لاختيار أيات متتالية او سور محددة للتلاوة  لمختلف القراء 
 و يقدمها لك كقائمة تشغيل يمكن تشغيلها على جهازك 
 تطلب انترنت لتعمل 
@@ -221,7 +226,7 @@ debug = 0
 
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """End Conversation by command."""
-    await update.message.reply_text("**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi")
+    await update.message.reply_text("**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi\nhttps://t.me/Mohamed8_8Soubhi")
     return END
 
 async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -314,9 +319,10 @@ async def ayat_4(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id=update.effective_chat.id, text='Please wait ... generating the file  ')
         #print(Surah_start, Surah_end, Ayah_start, Ayah_end)
         file_name = Ayat_program(Surah_start, Surah_end, Ayah_start, Ayah_end)    
-        await context.bot.send_document(chat_id=update.effective_chat.id, document=open(file_name, 'rb'))        
+        await context.bot.send_document(chat_id=update.effective_chat.id, document=open(home+file_name, 'rb'))        
         await context.bot.send_message(chat_id=update.effective_chat.id, text='we recommend to use VLC  ')
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi")
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi\n")
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="**** Allah Bless The Coder ****\nhttps://t.me/Mohamed8_8Soubhi\n")
         return ConversationHandler.END
     else:
         text_sura = '''\nEnter the numbers of Surah separated by : OR , :-
@@ -338,9 +344,10 @@ async def Sura_Numbers(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if re.match(regex, user_entered):
         await context.bot.send_message(chat_id=update.effective_chat.id, text='Please wait ... generating the file  ')
         file_name = Surah_program(user_entered)    
-        await context.bot.send_document(chat_id=update.effective_chat.id, document=open(file_name, 'rb'))        
+        await context.bot.send_document(chat_id=update.effective_chat.id, document=open(home+file_name, 'rb'))        
         await context.bot.send_message(chat_id=update.effective_chat.id, text='we recommend to use VLC  ')
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi")
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi\n")
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="**** Allah Bless The Coder ****\nhttps://t.me/Mohamed8_8Soubhi\n")
         return ConversationHandler.END
     else:
         text_sura = '''\nEnter the numbers of Surah separated by : OR , :-
@@ -530,20 +537,19 @@ def Ayat_program(Surah_start, Surah_end, Ayah_start, Ayah_end):
     generate_playList(playlist_name,mp3url_list)
     return playlist_name
 
-async def send_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    file_path = '/path/to/your/file.txt'
-    await context.bot.send_document(chat_id=chat_id, document=open(file_path, 'rb'))
+
 
 async def radio(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text_radio = ''' we recommend to use 
 https://www.atheer-radio.com/'''
     await context.bot.send_message(chat_id=update.effective_chat.id, text=text_radio)
     #todo this list need to be modified 
-    file_path = r'RadioList.m3u'
+    file_path = home+r'RadioList.m3u'
     #await context.bot.send_document(chat_id=update.effective_chat.id, document=open(home+file_path, 'rb'))    
     await context.bot.send_document(chat_id=update.effective_chat.id, document=open(file_path, 'rb'))        
     await context.bot.send_message(chat_id=update.effective_chat.id, text='we recommend to use VLC  ')
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi")
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi\n")
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="**** Allah Bless The Coder ****\nhttps://t.me/Mohamed8_8Soubhi\n")
 
 async def caps(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text_caps = ' '.join(context.args).upper()
@@ -554,7 +560,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user = update.message.from_user
     #logger.info("User %s canceled the conversation.", user.first_name)
     await update.message.reply_text(
-        text="**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi", reply_markup=ReplyKeyboardRemove()
+        text="**** Allah Bless The Coder ****\nhttps://github.com/mohamed-soubhi\nhttps://t.me/Mohamed8_8Soubhi", reply_markup=ReplyKeyboardRemove()
     )
 
     return ConversationHandler.END
@@ -578,7 +584,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 if __name__ == '__main__':
-    token = open('token.txt', 'r').readlines()
+    token = open(home+'token.txt', 'r').readlines()
     application = ApplicationBuilder().token(token[0]).build()
 
     # Add conversation handler with the states 
